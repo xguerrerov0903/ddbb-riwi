@@ -1,14 +1,17 @@
 import mysql from 'mysql2';
 import express, { request } from 'express';
+import cors from 'cors';
 
 const app = express();
 
-app.listen()
+app.use(cors());
+
+// app.listen()
 
 const connection = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'Qwe.123*',
+    password: '1234',
     database: 'lovelace'
 })
 
@@ -21,8 +24,27 @@ connection.connect(
 )
 
 app.get('/clients',(request, response) =>{
-    response.json({
-        message: 'Esto es un mensaje'
+    connection.query('SELECT * FROM clients', (error,result)=>{
+    // connection.query('SELECT * FROM clients WHERE email= ? AND password = ?', (error,result)=>{
+        if (error) throw error;
+
+        response.json(result)
+    })
+})
+
+
+app.get('/clients/:id',(request, response) =>{
+
+    const {id} = request.params;
+
+    // request.body ??
+
+    // bcrypt
+    connection.query(`SELECT * FROM clients WHERE id = ?`, [id], (error,result)=>{
+
+        if (error) throw error;
+
+        response.json(result)
     })
 })
 
@@ -30,7 +52,14 @@ app.get('/clients',(request, response) =>{
     console.log(JSON.stringify(result));
 })*/
 
-app.listen(3000, () =>{
+app.post('/login'  ,(req,res) =>{
+
+})
+
+app.listen(3000, (error) =>{
+
+    if (error) throw error;
+
     console.log('Api corriendo en el puerto 3000')
 })
 
