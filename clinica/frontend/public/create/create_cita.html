@@ -1,0 +1,70 @@
+<!-- Table of events -->
+<section class="CitaContainer">
+<form id="newCitaForm">
+    <label>
+      ID Paciente:
+      <input type="number" name="id_paciente" required />
+    </label>
+
+    <label>
+      ID Médico:
+      <input type="number" name="id_medico" required />
+    </label>
+
+    <label>
+      Fecha:
+      <input type="date" name="fecha" required />
+    </label>
+
+    <label>
+      Hora:
+      <input type="time" name="hora" required />
+    </label>
+
+    <label>
+      Motivo:
+      <input type="text" name="motivo" required />
+    </label>
+
+    <label>
+      Descripción:
+      <input type="text" name="descripcion" />
+    </label>
+
+    <label>
+      Ubicación:
+      <select name="ubicacion" required>
+        <option value="">Seleccionar...</option>
+        <option value="Sede Norte">Sede Norte</option>
+        <option value="Sede Centro">Sede Centro</option>
+        <option value="Sede Sur">Sede Sur</option>
+      </select>
+    </label>
+
+    <label>
+      Método de pago:
+      <select name="metodo_pago" required>
+        <option value="">Seleccionar...</option>
+        <option value="Efectivo">Efectivo</option>
+        <option value="Transferencia">Transferencia</option>
+        <option value="Tarjeta Crédito">Tarjeta Crédito</option>
+        <option value="Tarjeta Débito">Tarjeta Débito</option>
+      </select>
+    </label>
+
+    <label>
+      Estatus:
+      <select name="estatus" required>
+        <option value="">Seleccionar...</option>
+        <option value="Cancelada">Cancelada</option>
+        <option value="Confirmada">Confirmada</option>
+        <option value="Reprogramada">Reprogramada</option>
+        <option value="Pendiente">Pendiente</option>
+      </select>
+    </label>
+
+    <div class="form-actions">
+      <button type="submit">Crear cita</button>
+    </div>
+  </form>
+</section>

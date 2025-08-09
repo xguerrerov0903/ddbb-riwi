@@ -3,12 +3,14 @@ import express from 'express';
 import cors from 'cors';
 import { connection } from './db.js';
 import {
-  listCitas,
-  getCita,
-  createCita,
-  updateCita,
-  deleteCita,
+  listCitas, getCita, createCita, updateCita, deleteCita,
 } from './crud/citas_crud.js';
+import {
+  listPacientes, getPaciente, createPaciente, updatePaciente, deletePaciente,
+} from './crud/pacientes_crud.js';
+import {
+  listMedicos, getMedico, createMedico, updateMedico, deleteMedico,
+} from './crud/medicos_crud.js';
 
 const app = express();
 
@@ -18,25 +20,26 @@ app.use(express.json());
 
 app.get('/', (_req, res) => res.send('API OK 👋'));
 
-// ---- Citas (CRUD) ----
+// ---- Citas ----
 app.get('/citas', listCitas);
 app.get('/citas/:id', getCita);
 app.post('/citas', createCita);
-app.patch('/citas/:id', updateCita); // 👈 cambiado de PUT a PATCH
+app.patch('/citas/:id', updateCita);
 app.delete('/citas/:id', deleteCita);
 
-/*
-app.get('/pacientes', async (_req, res) => {
-  const [rows] = await connection.execute('SELECT * FROM pacientes');
-  res.json(rows);
-});
-app.get('/pacientes/:id', async (req, res) => {
-  const [rows] = await connection.execute(
-    'SELECT * FROM pacientes WHERE id_paciente = ?',
-    [req.params.id]
-  );
-  res.json(rows);
-});*/
+// ---- Pacientes ----
+app.get('/pacientes', listPacientes);
+app.get('/pacientes/:id', getPaciente);
+app.post('/pacientes', createPaciente);
+app.patch('/pacientes/:id', updatePaciente);
+app.delete('/pacientes/:id', deletePaciente);
+
+// ---- Médicos ----
+app.get('/medicos', listMedicos);
+app.get('/medicos/:id', getMedico);
+app.post('/medicos', createMedico);
+app.patch('/medicos/:id', updateMedico);
+app.delete('/medicos/:id', deleteMedico);
 
 const PORT = 3000;
 app.listen(PORT, () => console.log(`API corriendo en http://localhost:${PORT}`));
