@@ -8,12 +8,10 @@ const routes = {
   "/pacientes": "/pacientes.html",
   "/create/create_cita": "/create/create_cita.html",
   "/create/create_medico": "/create/create_medico.html",
-  "/create/create_paciente": "/create/create_paciente.html"
-  /*  
-    
-    "/create/create-medico": "/create/create-medico.html",
-    "/create/create-paciente": "/create/create-paciente.html",
-    "/login": "/login.html",*/
+  "/create/create_paciente": "/create/create_paciente.html",
+  "/login": "/login.html",
+"/registro": "/registro.html",
+  
 };
 
 // Function to handle navigation and load the appropriate content
@@ -23,6 +21,7 @@ document.body.addEventListener("click", (e) => {
     navigate(e.target.getAttribute("href"));
   } 
 });
+
 
 // Handle logout button click
 const logoutButton = document.getElementById("logoutButton");
@@ -34,18 +33,33 @@ logoutButton.addEventListener("click", function () {
   window.location.href = "/login"; 
 });
 
+function hideLogOut(user) {
+  const logoutBtn = document.getElementById("logoutButton");
+  if (logoutBtn) logoutBtn.style.display = user ? "inline-block" : "none";
+}
+
 
 // Function to navigate to a specific path and load the corresponding content
 async function navigate(pathname) {
+
+let user = null;
+  try { user = JSON.parse(localStorage.getItem("user")); } catch { user = null; }
+    hideLogOut(user);
+  if (!user && pathname !== "/login" && pathname !== "/registro") {
+    pathname = "/login";
+  }
   const route = routes[pathname];
   const html = await fetch(route).then((res) => res.text());
   document.getElementById("content").innerHTML = html;
   history.pushState({}, "", pathname);
 
-  const user = JSON.parse(localStorage.getItem("user"));
 
-  // The views are protected by the user permissions
-  if (pathname === "/" || pathname === "/citas") {
+
+  if (pathname === "/login") {
+    import("./js/login.js").then((module) => {
+      module.initLogin();
+    })
+    } else if (pathname === "/" || pathname === "/citas") {
     import("./js/citas.js").then((module) => {
       module.loadCitas();
     });
@@ -62,11 +76,11 @@ async function navigate(pathname) {
 } else if (pathname === "/create/create_medico") {
   import("./js/create/create_medico.js")
 }else if (pathname === "/create/create_paciente") {
-  import("./js/create/create_paciente.js")
-}
+  import("./js/create/create_paciente.js") 
 
-
-}
+}else if (pathname === "/registro") {
+    import("./js/registro.js")
+}}
 
 window.addEventListener("popstate", () => navigate(location.pathname));
 

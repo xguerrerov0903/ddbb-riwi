@@ -11,6 +11,9 @@ import {
 import {
   listMedicos, getMedico, createMedico, updateMedico, deleteMedico,
 } from './crud/medicos_crud.js';
+import {
+  listUsuarios, getUsuario, createUsuario, updateUsuario, deleteUsuario
+} from './crud/usuarios_crud.js';
 
 const app = express();
 
@@ -40,6 +43,14 @@ app.get('/medicos/:id', getMedico);
 app.post('/medicos', createMedico);
 app.patch('/medicos/:id', updateMedico);
 app.delete('/medicos/:id', deleteMedico);
+
+// ---- Usuarios ----
+app.get('/usuarios', listUsuarios);
+app.get('/usuarios/:id', getUsuario);
+app.post('/usuarios', createUsuario);
+app.patch('/usuarios/:id', updateUsuario);
+app.delete('/usuarios/:id', deleteUsuario);
+
 
 const PORT = 3000;
 app.listen(PORT, () => console.log(`API corriendo en http://localhost:${PORT}`));
