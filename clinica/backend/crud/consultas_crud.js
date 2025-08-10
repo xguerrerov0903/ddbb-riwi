@@ -1,66 +1,57 @@
-// backend/citas_crud.js
-import { connection } from '../db.js';
+import { connection } from "../db.js";
 
-export async function listCitas(_req, res) {
-  const [rows] = await connection.execute('SELECT * FROM citas');
-  res.json(rows); // devuelve [] si no hay
-}
-
-export async function getCita(req, res) {
-  const [rows] = await connection.execute(
-    'SELECT * FROM citas WHERE id_cita = ?',
-    [req.params.id]
-  );
-  if (rows.length === 0) return res.status(404).json({ error: 'No existe' });
-  res.json(rows[0]);
-}
-
-export async function createCita(req, res) {
-  const { id_paciente, id_medico, fecha, hora, motivo, descripcion, ubicacion, metodo_pago, estatus } = req.body;
-
-  const [r] = await connection.execute(
-    `INSERT INTO citas (id_paciente, id_medico, fecha, hora, motivo, descripcion, ubicacion, metodo_pago, estatus)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-    [id_paciente, id_medico, fecha, hora, motivo, descripcion ?? null, ubicacion, metodo_pago, estatus]
-  );
+export async function filtrarCitasMedicoFechas(req, res) {
+  const { id_medico, fecha_inicio, fecha_fin } = req.body;
 
   const [rows] = await connection.execute(
-    'SELECT * FROM citas WHERE id_cita = ?',
-    [r.insertId]
+    `SELECT m.nombre as Medico, m.especialidad, c.*
+        FROM citas  c
+        JOIN medicos m ON c.id_medico = m.id_medico
+        WHERE c.? = 2 AND c.fecha BETWEEN ? AND ?
+        ORDER BY c.fecha;
+
+     VALUES (?, ?, ?)`,
+    [id_medico, fecha_inicio, fecha_fin]
   );
-  res.status(201).json(rows[0]);
+  res.json(rows);
 }
 
-export async function updateCita(req, res) {
-  const id = req.params.id;
-  const { id_paciente, id_medico, fecha, hora, motivo, descripcion, ubicacion, metodo_pago, estatus } = req.body;
-
-  await connection.execute(
-    `UPDATE citas
-       SET id_paciente=?, id_medico=?, fecha=?, hora=?, motivo=?, descripcion=?, ubicacion=?, metodo_pago=?, estatus=?
-     WHERE id_cita=?`,
-    [id_paciente, id_medico, fecha, hora, motivo, descripcion ?? null, ubicacion, metodo_pago, estatus, id]
+export async function filtrarPacientes3Citas(_req, res) {
+  const [rows] = await connection.execute(
+    `SELECT p.*, 
+    COUNT(c.id_cita) AS Total_citas
+    FROM pacientes p
+    JOIN citas c ON c.id_paciente = p.id_paciente
+    GROUP BY p.id_paciente	
+    HAVING COUNT(*) >= 3;)`
   );
+  res.json(rows);
+}
+
+export async function filtrarMedicosCitas(_req, res) {
+  const [rows] = await connection.execute(
+    `SELECT 
+	m.*,
+	COUNT(c.id_cita) AS Total_citas
+    FROM medicos m
+    JOIN citas c ON c.id_medico = m.id_medico
+    GROUP BY m.id_medico;`
+  );
+  res.json(rows);
+}
+
+export async function filtrarMetodosPagoFechas(req, res) {
+  const { fecha_inicio, fecha_fin } = req.body;
 
   const [rows] = await connection.execute(
-    'SELECT * FROM citas WHERE id_cita = ?',
-    [id]
+    `SELECT 
+	c.metodo_pago, COUNT(id_cita) AS Total_citas
+    FROM citas c
+    WHERE c.fecha BETWEEN ? AND ?
+    GROUP BY c.metodo_pago
+
+     VALUES (?, ?)`,
+    [fecha_inicio, fecha_fin]
   );
-  if (rows.length === 0) return res.status(404).json({ error: 'No existe' });
-  res.json(rows[0]);
+  res.json(rows);
 }
-
-export async function deleteCita(req, res) {
-  const [r] = await connection.execute(
-    'DELETE FROM citas WHERE id_cita = ?',
-    [req.params.id]
-  );
-
-  if (r.affectedRows === 0) {
-    return res.status(404).json({ error: 'No existe' });
-  }
-
-  // Si se borró correctamente:
-  return res.sendStatus(204); // "No Content"
-}
-

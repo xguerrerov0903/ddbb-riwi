@@ -14,6 +14,12 @@ import {
 import {
   listUsuarios, getUsuario, createUsuario, updateUsuario, deleteUsuario
 } from './crud/usuarios_crud.js';
+import {
+  filtrarCitasMedicoFechas,
+  filtrarPacientes3Citas,
+  filtrarMedicosCitas,
+  filtrarMetodosPagoFechas,
+} from './crud/consultas_crud.js';
 
 const app = express();
 
@@ -50,6 +56,12 @@ app.get('/usuarios/:id', getUsuario);
 app.post('/usuarios', createUsuario);
 app.patch('/usuarios/:id', updateUsuario);
 app.delete('/usuarios/:id', deleteUsuario);
+
+// ---- Consultas avanzadas ----
+app.get('/consultas/citas-por-medico/:id_medico/:fecha_inicio/:fecha_fin', filtrarCitasMedicoFechas);
+app.get('/consultas/pacientes-frecuentes', filtrarPacientes3Citas);
+app.get('/consultas/medicos-citas', filtrarMedicosCitas);
+app.get('/consultas/pagos-por-metodo/:fecha_inicio/:fecha_fin', filtrarMetodosPagoFechas);
 
 
 const PORT = 3000;
