@@ -10,7 +10,8 @@ const routes = {
   "/create/create_medico": "/create/create_medico.html",
   "/create/create_paciente": "/create/create_paciente.html",
   "/login": "/login.html",
-"/registro": "/registro.html",
+    "/registro": "/registro.html",
+    "/consultas": "/consultas.html",
   
 };
 

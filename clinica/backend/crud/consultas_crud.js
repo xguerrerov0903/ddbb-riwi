@@ -23,7 +23,7 @@ export async function filtrarPacientes3Citas(_req, res) {
     FROM pacientes p
     JOIN citas c ON c.id_paciente = p.id_paciente
     GROUP BY p.id_paciente	
-    HAVING COUNT(*) >= 3;)`
+    HAVING COUNT(*) >= 3`
   );
   res.json(rows);
 }
@@ -31,11 +31,12 @@ export async function filtrarPacientes3Citas(_req, res) {
 export async function filtrarMedicosCitas(_req, res) {
   const [rows] = await connection.execute(
     `SELECT 
-	m.*,
-	COUNT(c.id_cita) AS Total_citas
-    FROM medicos m
-    JOIN citas c ON c.id_medico = m.id_medico
-    GROUP BY m.id_medico;`
+       m.*,
+       COUNT(c.id_cita) AS Total_citas
+     FROM medicos m
+     JOIN citas c ON c.id_medico = m.id_medico
+     WHERE c.fecha BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 MONTH) AND CURDATE()
+     GROUP BY m.id_medico` 
   );
   res.json(rows);
 }

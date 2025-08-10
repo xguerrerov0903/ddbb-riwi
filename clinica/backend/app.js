@@ -60,7 +60,7 @@ app.delete('/usuarios/:id', deleteUsuario);
 // ---- Consultas avanzadas ----
 app.get('/consultas/citas-por-medico/:id_medico/:fecha_inicio/:fecha_fin', filtrarCitasMedicoFechas);
 app.get('/consultas/pacientes-frecuentes', filtrarPacientes3Citas);
-app.get('/consultas/medicos-citas', filtrarMedicosCitas);
+app.get('/consultas/medicos-citas-mes', filtrarMedicosCitas);
 app.get('/consultas/pagos-por-metodo/:fecha_inicio/:fecha_fin', filtrarMetodosPagoFechas);
 
 
