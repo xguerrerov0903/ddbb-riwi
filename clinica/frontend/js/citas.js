@@ -38,6 +38,27 @@ function printCitas(citas) {
     .join("");
 }
 
+function rePrintCitaView(c, tr) {
+  tr.innerHTML = `
+    <td>${c.id_cita}</td>
+    <td>${c.id_paciente ?? "-"}</td>
+    <td>${c.id_medico ?? "-"}</td>
+    <td>${c.fecha}</td>
+    <td>${c.hora}</td>
+    <td>${c.motivo}</td>
+    <td>${c.descripcion ?? "-"}</td>
+    <td>${c.ubicacion ?? "-"}</td>
+    <td>${c.metodo_pago ?? "-"}</td>
+    <td>${c.estatus ?? "-"}</td>
+    <td>
+      <button type="button" value="edit">Editar</button>
+      <button type="button" value="delete">Eliminar</button>
+    </td>
+  `;
+}
+
+
+
 // Hear the event submit (button) of the form
 function setupCitasTableListener() {
   const tbody = document.getElementById("citasTableBody");
@@ -56,8 +77,7 @@ function setupCitasTableListener() {
     // Check if the action is delete
     if (action === "delete") {
       await deletes(url, id);
-      const updateCitas = await get(url);
-      printCitas(updateCitas);
+      tr.remove();
     } else if (action === "edit") {
       editCita(id);
     } else if (action === "save-cita") {
@@ -86,15 +106,11 @@ function setupCitasTableListener() {
 
       // Update cita in DB
       await update(url, id, updatedCita);
-
-      // Reprint citas after update
-      const updateCitas = await get(url);
-      printCitas(updateCitas);
+      rePrintCitaView(updatedCita, tr);
     } else {
       // This case es cancel so dont edit the event
-      const updateCita = await get(url);
-      // Reprint the events without changes
-      printCitas(updateCita);
+      const original = await get_id(url, id);
+      rePrintCitaView(original, tr);
     }
   });
   // If the user is not an admin, listen for enroll actions
@@ -105,8 +121,8 @@ function setupCitasTableListener() {
 async function editCita(id) {
   const citaContainer = document.getElementById(id);
   const cita = await get_id(url, id);
-    const fechaSolo = cita.fecha ? cita.fecha.slice(0, 10) : "";
-  const horaSolo  = cita.hora  ? cita.hora.slice(0, 5)   : "";
+  const fechaSolo = cita.fecha ? cita.fecha.slice(0, 10) : "";
+  const horaSolo = cita.hora ? cita.hora.slice(0, 5) : "";
   citaContainer.innerHTML = `
         <td>${cita.id_cita}</td>
     <td><input type="number" value="${cita.id_paciente ?? ""}" /></td>
@@ -146,6 +162,6 @@ async function editCita(id) {
 }
 
 function selectOpt(val, current) {
-  const sel = val === current ? ' selected' : '';
+  const sel = val === current ? " selected" : "";
   return `<option value="${val}"${sel}>${val}</option>`;
 }

@@ -18,6 +18,7 @@ function printMedicos(medicos) {
     .map(
       (m) => `
       <tr id="${m.id_medico}">
+        <td>${m.id_medico}</td>
         <td>${m.nombre}</td>
         <td>${m.especialidad}</td>
         <td>
@@ -28,6 +29,21 @@ function printMedicos(medicos) {
     `
     )
     .join("");
+}
+
+function rePrintMedico(m, tr) {
+  tr.innerHTML = `
+        <tr id="${m.id_medico}">
+        <td>${m.id_medico}</td>
+        <td>${m.nombre}</td>
+        <td>${m.especialidad}</td>
+        <td>
+          <button type="button" value="edit">Editar</button>
+          <button type="button" value="delete">Eliminar</button>
+        </td>
+      </tr>
+    `;
+
 }
 
 // Hear the event submit (button) of the form
@@ -48,8 +64,7 @@ function setupMedicosTableListener() {
     // Check if the action is delete
     if (action === "delete") {
       await deletes(url, id);
-      const updateMedicos = await get(url);
-      printMedicos(updateMedicos);
+      tr.remove(); // elimina solo esta fila, no repintes toda la tabla
     } else if (action === "edit") {
       editMedico(id);
     } else if (action === "save-medico") {
@@ -61,19 +76,15 @@ function setupMedicosTableListener() {
         // Usa los datos existentes y actualiza lo editado
         ...existingMedico,
         nombre: inputs[0].value,
-        especialidad: inputs[1].value
+        especialidad: inputs[1].value,
       };
       // Update cita in DB
       await update(url, id, updatedMedico);
-
-      // Reprint medicos after update
-      const updateMedicos = await get(url);
-      printMedicos(updateMedicos);
+      rePrintMedico(updatedMedico, tr);
     } else {
       // This case es cancel so dont edit the event
-      const updateMedico = await get(url);
-      // Reprint the events without changes
-      printMedicos(updateMedico);
+      const original = await get_id(url, id);
+      rePrintMedico(original, tr);
     }
   });
   // If the user is not an admin, listen for enroll actions

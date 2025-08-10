@@ -1,21 +1,118 @@
-<section class="consultas">
+<section id="ConsultasFiltros"class="consultas">
     <h1>CONSULTAS:</h1>
     </ul>
     <h2> Filtrar citas por médico y rango de fechas</h2>
     <form>
-
-    <button type="button" value="citasMedicoFecha">Log in</button>
+        <label>
+      ID Médico:
+      <input type="number" name="id_medico" id="id_medico" required />
+    </label>
+    <label>
+      Fecha inicio:
+      <input type="date" name="fecha_inicio" id="fecha_inicio" required />
+    </label>
+    <label>
+      Fecha fin:
+      <input type="date" name="fecha_fin" id="fecha_fin" required />
+    </label>
+    <button type="button" value="citasMedicoFecha">Filtrar</button>
+    <br><br>
+    <table>
+        <thead>
+            <tr>
+                <th>Medico</th>
+                <th>Especialidad</th>
+                <th>ID Cita</th>
+                <th>ID Paciente</th>
+                <th>ID Medico</th>
+                <th>Hora</th>
+                <th>Fecha</th>
+                <th>Motivo</th>
+                <th>Descripción</th>
+                <th>Ubicación</th>
+                <th>Método de pago</th>
+                <th>Estatus</th>
+            </tr>
+        </thead>
+    <tbody id="TablaCitasMedicoFecha"></tbody>
     </form>
+     </table>
     </ul>
-    <h2> Obtener pacientes con más de 3 citas registrad</h2>
-    <button type="button" value="pacientes3Citas">Log in</button>
+    <h2> Obtener pacientes con más de 3 citas registradas</h2>
+    <button type="button" value="pacientes3Citas">Filtrar</button>
+        <br><br>
+          <table>
+        <thead>
+            <tr>
+                <th>ID Paciente</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Total citas</th>
+            </tr>
+        </thead>
+    <tbody id="TablaPacientes3Citas"></tbody>
+    </table>
     </ul>
     <h2> Listar médicos con el número de citas atendidas en el último mes</h2>
-    <button type="button" value="medicosCitasMes">Log in</button>
+    <button type="button" value="medicosCitasMes">Filtrar</button>
+        <br><br>
+         <table>
+        <thead>
+            <tr>
+                <th>ID Medico</th>
+                <th>Nombre</th>
+                <th>Especialidad</th>
+                <th>Total citas</th>
+            </tr>
+        </thead>
+    <tbody id="TablaMedicosCitasMes"></tbody>
+    </table>
     </ul>
     <h2> Consultar ingresos generados por método de pago en un rango de fechas</h2>
     <form>
-
-    <button type="button" value="ingresosMetodoPago">Log in</button>
+    <label>
+      Fecha inicio:
+      <input type="date" name="fecha" id="fecha_inicio_pago"required />
+    </label>
+    <label>
+      Fecha fin:
+      <input type="date" name="fecha" id="fecha_fin_pago" required />
+    </label>
+    <button type="button" value="metodosPagoFechas">Filtrar</button>
+        <br><br>
+          <table>
+        <thead>
+            <tr>
+                <th>Método de pago</th>
+                <th>Total citas</th>
+            </tr>
+        </thead>
+    <tbody id="TablaMetodosPagoFechas"></tbody>
+    </table>
     </form>
 </section>
+<script>
+  // ---- Filtro Citas por Médico ----
+  const fechaInicioCitas = document.getElementById("fecha_inicio");
+  const fechaFinCitas = document.getElementById("fecha_fin");
+
+  fechaInicioCitas.addEventListener("change", () => {
+    fechaFinCitas.min = fechaInicioCitas.value; // Fin no puede ser antes del inicio
+  });
+
+  fechaFinCitas.addEventListener("change", () => {
+    fechaInicioCitas.max = fechaFinCitas.value; // Inicio no puede ser después del fin
+  });
+
+  // ---- Filtro Métodos de Pago ----
+  const fechaInicioPago = document.getElementById("fecha_inicio_pago");
+  const fechaFinPago = document.getElementById("fecha_fin_pago");
+
+  fechaInicioPago.addEventListener("change", () => {
+    fechaFinPago.min = fechaInicioPago.value;
+  });
+
+  fechaFinPago.addEventListener("change", () => {
+    fechaInicioPago.max = fechaFinPago.value;
+  });
+</script>

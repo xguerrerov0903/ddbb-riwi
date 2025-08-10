@@ -6,8 +6,7 @@ const url = "http://localhost:3000/pacientes";
 export async function loadPacientes() {
   const pacientes = await get(url);
   printPacientes(pacientes);
-  setupPacientesTableListener
-  ();
+  setupPacientesTableListener();
 }
 
 loadPacientes();
@@ -31,6 +30,18 @@ function printPacientes(pacientes) {
     .join("");
 }
 
+function rePrintPaciente(p, tr) {
+  tr.innerHTML = `
+      <tr id="${p.id_paciente}">
+        <td>${p.nombre}</td>
+        <td>${p.email}</td>
+        <td>
+          <button type="button" value="edit">Editar</button>
+          <button type="button" value="delete">Eliminar</button>
+        </td>
+      `;
+}
+
 // Hear the event submit (button) of the form
 function setupPacientesTableListener() {
   const tbody = document.getElementById("pacientesTableBody");
@@ -49,32 +60,47 @@ function setupPacientesTableListener() {
     // Check if the action is delete
     if (action === "delete") {
       await deletes(url, id);
-      const updatePacientes = await get(url);
-      printPacientes(updatePacientes);
+      tr.remove();
     } else if (action === "edit") {
       editPaciente(id);
     } else if (action === "save_paciente") {
       const id = tr.id;
       // Mantén el mismo patrón por índices
-      const inputs = tr.querySelectorAll("input"); // 0:id_paciente, 1:id paciente, 2:fecha, 3:hora, 4:motivo, 5:descripcion
+      const inputs = tr.querySelectorAll("input");
+      const nuevoNombre = inputs[0].value.trim();
+      const nuevoEmail = inputs[1].value.trim();
+
+      // Traer todos los pacientes
+      const todos = await get(url);
+
+      // Verificar si existe otro paciente con el mismo email
+      const existe =
+        Array.isArray(todos) &&
+        todos.some(
+          (p) =>
+            p.email === nuevoEmail && p.id_paciente.toString() !== id.toString()
+        );
+
+      if (existe) {
+        alert(`El email "${nuevoEmail}" ya está registrado en otro paciente.`);
+        return;
+      }
+
+      // Obtener el paciente original
       const existingPaciente = await get_id(url, id);
+
+      // Crear objeto actualizado
       const updatedPaciente = {
-        // Usa los datos existentes y actualiza lo editado
         ...existingPaciente,
-        nombre: inputs[0].value,
-        email: inputs[1].value
+        nombre: nuevoNombre,
+        email: nuevoEmail,
       };
       // Update cita in DB
       await update(url, id, updatedPaciente);
-
-      // Reprint pacientes after update
-      const updatePacientes = await get(url);
-      printPacientes(updatePacientes);
+      rePrintPaciente(updatedPaciente, tr);
     } else {
-      // This case es cancel so dont edit the event
-      const updatePaciente = await get(url);
-      // Reprint the events without changes
-      printPacientes(updatePaciente);
+      const original = await get_id(url, id);
+      rePrintPaciente(original, tr);
     }
   });
   // If the user is not an admin, listen for enroll actions
@@ -85,13 +111,13 @@ function setupPacientesTableListener() {
 async function editPaciente(id) {
   const pacienteContainer = document.getElementById(id);
   const paciente = await get_id(url, id);
-  pacienteContainer.innerHTML =  `
+  pacienteContainer.innerHTML = `
         <td>${paciente.id_paciente}</td>
     <td><input type="text" value="${paciente.nombre}" /></td>
     <td><input type="email" value="${paciente.email}" /></td>
     <td>
-      <button type="button" value="save-paciente">Guardar</button>
-      <button type="button" value="cancel-edit">Cancelar</button>
+      <button type="button" value="save_paciente">Guardar</button>
+      <button type="button" value="cancel_edit">Cancelar</button>
     </td>
     `;
 }

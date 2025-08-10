@@ -1,19 +1,18 @@
 import { connection } from "../db.js";
 
 export async function filtrarCitasMedicoFechas(req, res) {
-  const { id_medico, fecha_inicio, fecha_fin } = req.body;
+  const { id_medico, fecha_inicio, fecha_fin } = req.params;
 
   const [rows] = await connection.execute(
-    `SELECT m.nombre as Medico, m.especialidad, c.*
-        FROM citas  c
-        JOIN medicos m ON c.id_medico = m.id_medico
-        WHERE c.? = 2 AND c.fecha BETWEEN ? AND ?
-        ORDER BY c.fecha;
-
-     VALUES (?, ?, ?)`,
+    `SELECT m.nombre AS Medico, m.especialidad, c.*
+     FROM citas c
+     JOIN medicos m ON c.id_medico = m.id_medico
+     WHERE c.id_medico = ?
+       AND c.fecha BETWEEN ? AND ?
+     ORDER BY c.fecha, c.hora`,
     [id_medico, fecha_inicio, fecha_fin]
   );
-  res.json(rows);
+  res.json(rows || []);
 }
 
 export async function filtrarPacientes3Citas(_req, res) {
@@ -25,7 +24,7 @@ export async function filtrarPacientes3Citas(_req, res) {
     GROUP BY p.id_paciente	
     HAVING COUNT(*) >= 3`
   );
-  res.json(rows);
+  res.json(rows || []);
 }
 
 export async function filtrarMedicosCitas(_req, res) {
@@ -38,21 +37,19 @@ export async function filtrarMedicosCitas(_req, res) {
      WHERE c.fecha BETWEEN DATE_SUB(CURDATE(), INTERVAL 1 MONTH) AND CURDATE()
      GROUP BY m.id_medico` 
   );
-  res.json(rows);
+  res.json(rows || []);
 }
 
 export async function filtrarMetodosPagoFechas(req, res) {
-  const { fecha_inicio, fecha_fin } = req.body;
+  const { fecha_inicio, fecha_fin } = req.params;
 
   const [rows] = await connection.execute(
     `SELECT 
 	c.metodo_pago, COUNT(id_cita) AS Total_citas
     FROM citas c
     WHERE c.fecha BETWEEN ? AND ?
-    GROUP BY c.metodo_pago
-
-     VALUES (?, ?)`,
+    GROUP BY c.metodo_pago`,
     [fecha_inicio, fecha_fin]
   );
-  res.json(rows);
+  res.json(rows || []);
 }
